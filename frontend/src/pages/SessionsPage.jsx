@@ -1,5 +1,7 @@
+import { useEffect, useState } from "react";
 import {
   Alert,
+  Box,
   Button,
   Card,
   CardContent,
@@ -13,56 +15,83 @@ import {
   TextField,
   Typography,
 } from "@mui/material";
-import { useEffect, useState } from "react";
 import { useDispatch, useSelector } from "react-redux";
 import { Navigate } from "react-router-dom";
-import { clearSessionFeedback, createReview, fetchMySessions, updateSessionStatus } from "../features/sessions/sessionsSlice";
+import {
+  clearSessionFeedback,
+  createReview,
+  fetchMySessions,
+  updateSessionStatus,
+} from "../features/sessions/sessionsSlice";
+
+function statusColor(status) {
+  if (status === "accepted") {
+    return "success";
+  }
+
+  if (status === "declined") {
+    return "error";
+  }
+
+  return "warning";
+}
 
 export default function SessionsPage() {
   const dispatch = useDispatch();
   const { user } = useSelector((state) => state.auth);
   const { items, error, success } = useSelector((state) => state.sessions);
   const [selectedSession, setSelectedSession] = useState(null);
-  const [reviewForm, setReviewForm] = useState({ rating: "5", comment: "" });
+  const [reviewForm, setReviewForm] = useState({
+    rating: "5",
+    comment: "",
+  });
 
   useEffect(() => {
-    if (user) {
-      dispatch(fetchMySessions());
-    }
-  }, [dispatch, user]);
+    dispatch(fetchMySessions());
+  }, [dispatch]);
 
-  if (!user) {
-    return <Navigate to="/signin" replace />;
+  if (user?.role === "admin") {
+    return <Navigate to="/app/admin" replace />;
   }
 
   return (
     <Stack spacing={3}>
-      <Typography variant="h3">{user.role === "mentor" ? "Mentor requests" : "My mentorship sessions"}</Typography>
-      <Typography color="text.secondary">
-        {user.role === "mentor"
-          ? "Review incoming mentorship requests and decide which appointments to accept."
-          : "Track your mentorship requests and review mentors after accepted sessions."}
-      </Typography>
+      <Stack spacing={1}>
+        <Typography variant="h3">
+          {user?.role === "mentor" ? "Requests" : "My conversations"}
+        </Typography>
+        <Typography color="text.secondary">
+          {user?.role === "mentor"
+            ? "See who has reached out and choose the conversations you can take on."
+            : "Follow the people you have contacted and leave a note after a helpful session."}
+        </Typography>
+      </Stack>
+
       {error ? <Alert severity="error">{error}</Alert> : null}
       {success ? <Alert severity="success">{success}</Alert> : null}
-      {items.length === 0 ? <Alert severity="info">No session requests yet.</Alert> : null}
+      {items.length === 0 ? (
+        <Alert severity="info">No session requests yet.</Alert>
+      ) : null}
+
       {items.map((session) => (
         <Card key={session.id}>
-          <CardContent>
+          <CardContent sx={{ p: 3 }}>
             <Stack spacing={2}>
-              <Stack direction={{ xs: "column", md: "row" }} justifyContent="space-between" alignItems={{ md: "center" }}>
-                <Typography variant="h6">{session.agenda}</Typography>
+              <Stack
+                direction={{ xs: "column", md: "row" }}
+                justifyContent="space-between"
+                spacing={1.5}
+              >
+                <Box>
+                  <Typography variant="h5">{session.agenda}</Typography>
+                </Box>
                 <Chip
                   label={session.status}
-                  color={
-                    session.status === "accepted"
-                      ? "success"
-                      : session.status === "declined"
-                        ? "error"
-                        : "warning"
-                  }
+                  color={statusColor(session.status)}
+                  sx={{ width: "fit-content" }}
                 />
               </Stack>
+
               <Typography color="text.secondary">{session.message}</Typography>
               <Typography>
                 Mentor: {session.mentor?.firstName} {session.mentor?.lastName}
@@ -70,18 +99,28 @@ export default function SessionsPage() {
               <Typography>
                 Mentee: {session.mentee?.firstName} {session.mentee?.lastName}
               </Typography>
+
               {session.review ? (
                 <Alert severity={session.review.isVisible ? "success" : "warning"}>
-                  Review submitted: {session.review.rating}/5. {session.review.isVisible ? "Visible on the mentor profile." : "Hidden by an admin."}
+                  Your review: {session.review.rating}/5.{" "}
+                  {session.review.isVisible
+                    ? "Thanks for sharing it."
+                    : "It is no longer public."}
                 </Alert>
               ) : null}
-              {user.role === "mentor" && session.status === "pending" ? (
-                <Stack direction={{ xs: "column", sm: "row" }} spacing={2}>
+
+              {user?.role === "mentor" && session.status === "pending" ? (
+                <Stack direction={{ xs: "column", sm: "row" }} spacing={1.5}>
                   <Button
                     variant="contained"
                     onClick={() => {
                       dispatch(clearSessionFeedback());
-                      dispatch(updateSessionStatus({ sessionId: session.id, decision: "accepted" }));
+                      dispatch(
+                        updateSessionStatus({
+                          sessionId: session.id,
+                          decision: "accepted",
+                        })
+                      );
                     }}
                   >
                     Accept
@@ -91,14 +130,22 @@ export default function SessionsPage() {
                     color="error"
                     onClick={() => {
                       dispatch(clearSessionFeedback());
-                      dispatch(updateSessionStatus({ sessionId: session.id, decision: "declined" }));
+                      dispatch(
+                        updateSessionStatus({
+                          sessionId: session.id,
+                          decision: "declined",
+                        })
+                      );
                     }}
                   >
                     Decline
                   </Button>
                 </Stack>
               ) : null}
-              {user.role === "user" && session.status === "accepted" && !session.review ? (
+
+              {user?.role === "user" &&
+              session.status === "accepted" &&
+              !session.review ? (
                 <Button
                   variant="outlined"
                   onClick={() => {
@@ -106,22 +153,30 @@ export default function SessionsPage() {
                     setSelectedSession(session);
                   }}
                 >
-                  Leave review
+                  Share a review
                 </Button>
               ) : null}
             </Stack>
           </CardContent>
         </Card>
       ))}
-      <Dialog open={Boolean(selectedSession)} onClose={() => setSelectedSession(null)} fullWidth maxWidth="sm">
-        <DialogTitle>Share a mentor review</DialogTitle>
+
+      <Dialog
+        open={Boolean(selectedSession)}
+        onClose={() => setSelectedSession(null)}
+        fullWidth
+        maxWidth="sm"
+      >
+        <DialogTitle>Share a review</DialogTitle>
         <DialogContent>
           <Stack spacing={2} sx={{ mt: 1 }}>
             <TextField
               select
               label="Rating"
               value={reviewForm.rating}
-              onChange={(event) => setReviewForm({ ...reviewForm, rating: event.target.value })}
+              onChange={(event) =>
+                setReviewForm({ ...reviewForm, rating: event.target.value })
+              }
             >
               {[5, 4, 3, 2, 1].map((rating) => (
                 <MenuItem key={rating} value={String(rating)}>
@@ -132,7 +187,9 @@ export default function SessionsPage() {
             <TextField
               label="Review"
               value={reviewForm.comment}
-              onChange={(event) => setReviewForm({ ...reviewForm, comment: event.target.value })}
+              onChange={(event) =>
+                setReviewForm({ ...reviewForm, comment: event.target.value })
+              }
               multiline
               minRows={4}
               required

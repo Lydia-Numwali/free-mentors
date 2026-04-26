@@ -1,53 +1,193 @@
-import { Box, Button, Card, CardContent, Chip, Stack, Typography } from "@mui/material";
+import {
+  Box,
+  Button,
+  Container,
+  Stack,
+  Typography,
+  Card,
+  CardContent,
+  Avatar,
+} from "@mui/material";
+import ArrowForwardRounded from "@mui/icons-material/ArrowForwardRounded";
+import ChatBubbleOutlineRounded from "@mui/icons-material/ChatBubbleOutlineRounded";
+import FavoriteBorderRounded from "@mui/icons-material/FavoriteBorderRounded";
+import SchoolRounded from "@mui/icons-material/SchoolRounded";
 import { Link as RouterLink } from "react-router-dom";
+import { useSelector } from "react-redux";
 
-const highlights = [
-  "Users can sign up and sign in",
-  "Admins approve mentor applicants and moderate reviews",
-  "End users browse mentors and request mentorship sessions",
-  "Mentors accept or decline mentorship session requests",
+const notes = [
+  {
+    icon: <SchoolRounded />,
+    title: "Learn from real experience",
+    text: "Talk with people who have already walked through the choices you are facing.",
+  },
+  {
+    icon: <ChatBubbleOutlineRounded />,
+    title: "Ask for a focused session",
+    text: "Share what you are working on and request time with a mentor who fits.",
+  },
+  {
+    icon: <FavoriteBorderRounded />,
+    title: "Keep it generous",
+    text: "Free Mentors is built around people giving time, clarity, and encouragement.",
+  },
+];
+
+const mentorFaces = [
+  { initials: "AK", name: "Amina", role: "Frontend mentor" },
+  { initials: "ND", name: "Neo", role: "Career guidance" },
+  { initials: "TM", name: "Tariro", role: "Product thinking" },
 ];
 
 export default function HomePage() {
+  const { user } = useSelector((state) => state.auth);
+  const primaryPath = user ? "/app" : "/signup";
+
   return (
-    <Stack spacing={4}>
-      <Card sx={{ overflow: "hidden" }}>
-        <CardContent sx={{ p: { xs: 3, md: 5 } }}>
+    <Box>
+      <Box
+        sx={{
+          minHeight: { xs: "auto", md: "86vh" },
+          display: "flex",
+          alignItems: "center",
+          bgcolor: "#fbfaf7",
+          pt: { xs: 5, md: 8 },
+          pb: { xs: 6, md: 8 },
+        }}
+      >
+        <Container maxWidth="lg">
           <Box
             sx={{
               display: "grid",
-              gridTemplateColumns: { xs: "1fr", md: "1.5fr 1fr" },
-              gap: 4,
+              gridTemplateColumns: { xs: "1fr", md: "1fr 1fr" },
+              gap: { xs: 5, md: 8 },
               alignItems: "center",
             }}
           >
-            <Stack spacing={3}>
-              <Chip label="Mentor matching platform" color="secondary" sx={{ width: "fit-content" }} />
-              <Typography variant="h2">Free Mentors with a simple admin, mentor, and end-user flow.</Typography>
-              <Typography color="text.secondary">
-                Sign up, choose whether you want to become a mentor or find one, let the admin approve mentors, and manage mentorship requests from one shared system.
-              </Typography>
-              <Stack direction={{ xs: "column", sm: "row" }} spacing={2}>
-                <Button component={RouterLink} to="/signup" variant="contained" size="large">
-                  Create account
-                </Button>
-                <Button component={RouterLink} to="/signin" variant="outlined" size="large">
-                  Sign in
-                </Button>
+            <Box>
+              <Stack spacing={3}>
+                <Typography
+                  variant="h1"
+                  sx={{
+                    fontSize: { xs: "2.45rem", md: "4.2rem" },
+                    color: "text.primary",
+                    maxWidth: 680,
+                  }}
+                >
+                  Free Mentors
+                </Typography>
+                <Typography
+                  variant="h5"
+                  sx={{
+                    color: "text.secondary",
+                    lineHeight: 1.55,
+                    maxWidth: 620,
+                    fontWeight: 400,
+                  }}
+                >
+                  Find someone kind, experienced, and willing to help you think
+                  through your next step.
+                </Typography>
+                <Stack direction={{ xs: "column", sm: "row" }} spacing={1.5}>
+                  <Button
+                    component={RouterLink}
+                    to={primaryPath}
+                    variant="contained"
+                    size="large"
+                    endIcon={<ArrowForwardRounded />}
+                  >
+                    {user ? "Open my space" : "Start with a mentor"}
+                  </Button>
+                  <Button
+                    component={RouterLink}
+                    to={user ? "/app/mentors" : "/signin"}
+                    variant="outlined"
+                    size="large"
+                  >
+                    {user ? "See mentors" : "I already have an account"}
+                  </Button>
+                </Stack>
               </Stack>
-            </Stack>
-            <Stack spacing={2}>
-              {highlights.map((item) => (
-                <Card key={item} variant="outlined">
-                  <CardContent>
-                    <Typography>{item}</Typography>
+            </Box>
+
+            <Box>
+              <Box
+                sx={{
+                  minHeight: { xs: 360, md: 520 },
+                  borderRadius: 3,
+                  overflow: "hidden",
+                  position: "relative",
+                  backgroundImage:
+                    "linear-gradient(180deg, rgba(24,33,47,0.08), rgba(24,33,47,0.54)), url('/images/auth/auth_1.jpeg')",
+                  backgroundSize: "cover",
+                  backgroundPosition: "center",
+                }}
+              >
+                <Box
+                  sx={{
+                    position: "absolute",
+                    left: 24,
+                    right: 24,
+                    bottom: 24,
+                    color: "#ffffff",
+                  }}
+                >
+                  <Stack spacing={2}>
+                    <Typography variant="h4" sx={{ maxWidth: 430 }}>
+                      A good conversation can change the shape of a week.
+                    </Typography>
+                    <Stack direction="row" spacing={1}>
+                      {mentorFaces.map((mentor) => (
+                        <Avatar
+                          key={mentor.initials}
+                          sx={{
+                            bgcolor: "rgba(255,255,255,0.92)",
+                            color: "primary.main",
+                            fontWeight: 700,
+                            border: "2px solid rgba(255,255,255,0.5)",
+                          }}
+                        >
+                          {mentor.initials}
+                        </Avatar>
+                      ))}
+                    </Stack>
+                  </Stack>
+                </Box>
+              </Box>
+            </Box>
+          </Box>
+        </Container>
+      </Box>
+
+      <Box sx={{ bgcolor: "#ffffff", py: { xs: 6, md: 8 } }}>
+        <Container maxWidth="lg">
+          <Box
+            sx={{
+              display: "grid",
+              gridTemplateColumns: { xs: "1fr", md: "repeat(3, 1fr)" },
+              gap: 3,
+            }}
+          >
+            {notes.map((item) => (
+              <Box key={item.title}>
+                <Card sx={{ height: "100%" }}>
+                  <CardContent sx={{ p: 3 }}>
+                    <Stack spacing={2}>
+                      <Avatar
+                        sx={{ bgcolor: "primary.main", color: "#ffffff" }}
+                      >
+                        {item.icon}
+                      </Avatar>
+                      <Typography variant="h5">{item.title}</Typography>
+                      <Typography color="text.secondary">{item.text}</Typography>
+                    </Stack>
                   </CardContent>
                 </Card>
-              ))}
-            </Stack>
+              </Box>
+            ))}
           </Box>
-        </CardContent>
-      </Card>
-    </Stack>
+        </Container>
+      </Box>
+    </Box>
   );
 }
