@@ -1,0 +1,76 @@
+/* Input Component Styles */
+
+.input {
+  /* Base Styling */
+  background-color: var(--color-bg-primary);
+  border: 1px solid var(--color-border-secondary);
+  border-radius: var(--border-radius-md);
+  padding: var(--padding-input-regular);
+  font-family: inherit;
+  font-size: 14px;
+  font-weight: 400;
+  line-height: 1.5;
+  color: var(--color-text-primary);
+  transition: border-color 0.2s ease, box-shadow 0.2s ease;
+  cursor: text;
+  box-sizing: border-box;
+}
+
+/* Input Placeholder */
+.input::placeholder {
+  color: var(--color-text-disabled);
+  font-weight: 400;
+}
+
+/* Input Hover State */
+.input:hover:not(:disabled) {
+  border-color: var(--color-neutral-400);
+}
+
+/* Input Focus State */
+.input:focus {
+  outline: none;
+  border-color: var(--color-primary-blue);
+  box-shadow: 0 0 0 3px rgba(37, 99, 235, 0.1);
+}
+
+/* Input Disabled State */
+.input:disabled {
+  background-color: var(--color-bg-disabled);
+  border-color: var(--color-border-primary);
+  color: var(--color-text-disabled);
+  cursor: not-allowed;
+}
+
+/* Input Error State */
+.input--error {
+  border-color: var(--color-semantic-error);
+}
+
+.input--error:focus {
+  border-color: var(--color-semantic-error);
+  box-shadow: 0 0 0 3px rgba(239, 68, 68, 0.1);
+}
+
+/* Input Size Variants */
+
+/* Large Size */
+.input--large {
+  padding: 12px;
+  font-size: 16px;
+  height: 40px;
+}
+
+/* Regular Size (default) */
+.input--regular {
+  padding: var(--padding-input-regular);
+  font-size: 14px;
+  height: 36px;
+}
+
+/* Small Size */
+.input--small {
+  padding: 8px;
+  font-size: 12px;
+  height: 32px;
+}

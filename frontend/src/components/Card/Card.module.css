@@ -1,0 +1,44 @@
+/* Card Component Styles */
+
+.card {
+  /* Base Styling */
+  background-color: var(--color-bg-primary);
+  border: 1px solid var(--color-border-primary);
+  border-radius: var(--border-radius-lg);
+  padding: var(--padding-card);
+  box-shadow: 0 1px 3px rgba(0, 0, 0, 0.1);
+  transition: box-shadow 0.2s ease;
+  box-sizing: border-box;
+}
+
+/* Card Hover State */
+.card:hover {
+  box-shadow: 0 4px 6px rgba(0, 0, 0, 0.1);
+}
+
+/* Card Variants */
+
+/* Default Variant */
+.card--default {
+  border-color: var(--color-border-primary);
+}
+
+/* Success Variant */
+.card--success {
+  border-left: 2px solid var(--color-semantic-success);
+}
+
+/* Warning Variant */
+.card--warning {
+  border-left: 2px solid var(--color-semantic-warning);
+}
+
+/* Error Variant */
+.card--error {
+  border-left: 2px solid var(--color-semantic-error);
+}
+
+/* Info Variant */
+.card--info {
+  border-left: 2px solid var(--color-semantic-info);
+}
