@@ -1,6 +1,90 @@
+# Dependencies
 node_modules/
-dist/
 .venv/
+
+# Build outputs
+dist/
+build/
+
+# Python
 __pycache__/
 *.pyc
+*.pyo
+*.pyd
+.Python
+
+# Database
 backend/db.sqlite3
+*.db
+
+# Environment variables
+.env
+.env.local
+.env.*.local
+
+# IDE
+.vscode/
+.idea/
+*.swp
+*.swo
+*~
+
+# OS
+.DS_Store
+Thumbs.db
+
+# Logs
+*.log
+npm-debug.log*
+yarn-debug.log*
+yarn-error.log*
+frontend/vite-dev.log
+frontend/vite-dev.err
+
+# Testing
+coverage/
+.nyc_output/
+
+# Temporary files
+*.tmp
+*.temp
+
+# Next.js (if not using)
+.next/
+out/
+
+# TypeScript (if not using)
+*.tsbuildinfo
+
+# Tailwind (if not using)
+tailwind.config.ts
+
+# Additional frontend configs (if not needed)
+frontend/.eslintrc.json
+frontend/components.json
+frontend/jest.config.js
+frontend/jest.setup.js
+frontend/next.config.ts
+frontend/postcss.config.mjs
+frontend/tsconfig.json
+frontend/global.d.ts
+frontend/middleware.ts
+
+# Unused directories
+frontend/__tests__/
+frontend/app/
+frontend/components/
+frontend/config/
+frontend/context/
+frontend/hooks/
+frontend/lib/
+frontend/providers/
+frontend/public/
+frontend/services/
+frontend/src/features/admin/
+frontend/src/styles/
+frontend/src/utils/
+frontend/types/
+frontend/utils/
+frontend/FONT_SETUP.md
+frontend/src/styles.css
