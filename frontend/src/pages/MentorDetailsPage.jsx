@@ -1,8 +1,12 @@
+import { useEffect, useState } from "react";
 import {
   Alert,
+  Box,
   Button,
   Card,
   CardContent,
+  Chip,
+  CircularProgress,
   Dialog,
   DialogActions,
   DialogContent,
@@ -12,72 +16,123 @@ import {
   TextField,
   Typography,
 } from "@mui/material";
-import { useEffect, useState } from "react";
 import { useDispatch, useSelector } from "react-redux";
-import { Navigate, useParams } from "react-router-dom";
-import { fetchMentor } from "../features/mentors/mentorsSlice";
-import { clearSessionFeedback, createSessionRequest } from "../features/sessions/sessionsSlice";
+import { useParams } from "react-router-dom";
+import { clearSelectedMentor, fetchMentor } from "../features/mentors/mentorsSlice";
+import {
+  clearSessionFeedback,
+  createSessionRequest,
+} from "../features/sessions/sessionsSlice";
 
 export default function MentorDetailsPage() {
   const { mentorId } = useParams();
   const dispatch = useDispatch();
-  const mentor = useSelector((state) => state.mentors.selected);
-  const auth = useSelector((state) => state.auth);
-  const sessions = useSelector((state) => state.sessions);
+  const { user } = useSelector((state) => state.auth);
+  const mentorState = useSelector((state) => state.mentors);
+  const sessionState = useSelector((state) => state.sessions);
   const [open, setOpen] = useState(false);
-  const [form, setForm] = useState({ agenda: "", message: "" });
+  const [form, setForm] = useState({
+    agenda: "",
+    message: "",
+  });
 
   useEffect(() => {
-    if (auth.user) {
-      dispatch(fetchMentor(mentorId));
-    }
-  }, [auth.user, dispatch, mentorId]);
+    dispatch(fetchMentor(mentorId));
 
-  if (!auth.user) {
-    return <Navigate to="/signin" replace />;
-  }
+    return () => {
+      dispatch(clearSelectedMentor());
+    };
+  }, [dispatch, mentorId]);
+
+  const mentor = mentorState.selected;
 
   return (
     <Stack spacing={3}>
-      {sessions.error ? <Alert severity="error">{sessions.error}</Alert> : null}
-      {sessions.success ? <Alert severity="success">{sessions.success}</Alert> : null}
+      {sessionState.error ? <Alert severity="error">{sessionState.error}</Alert> : null}
+      {sessionState.success ? (
+        <Alert severity="success">{sessionState.success}</Alert>
+      ) : null}
+
+      {mentorState.detailStatus === "loading" ? (
+        <Box sx={{ display: "grid", placeItems: "center", py: 8 }}>
+          <CircularProgress />
+        </Box>
+      ) : null}
+
+      {mentorState.error && mentorState.detailStatus === "failed" ? (
+        <Alert severity="error">{mentorState.error}</Alert>
+      ) : null}
+
       {mentor ? (
         <>
           <Card>
-            <CardContent sx={{ p: 4 }}>
-              <Stack spacing={2}>
-                <Typography variant="h3">
-                  {mentor.firstName} {mentor.lastName}
-                </Typography>
-                <Typography color="primary.main">{mentor.expertise}</Typography>
-                <Typography color="text.secondary">{mentor.bio}</Typography>
-                <Typography>Email: {mentor.email}</Typography>
-                <Button
-                  variant="contained"
-                  onClick={() => {
-                    dispatch(clearSessionFeedback());
-                    setOpen(true);
+            <CardContent sx={{ p: { xs: 3, md: 4 } }}>
+              <Box
+                sx={{
+                  display: "grid",
+                  gridTemplateColumns: { xs: "1fr", lg: "1.2fr 0.8fr" },
+                  gap: 3,
+                }}
+              >
+                <Stack spacing={2}>
+                  <Chip label="Mentor" color="primary" sx={{ width: "fit-content" }} />
+                  <Typography variant="h3">
+                    {mentor.firstName} {mentor.lastName}
+                  </Typography>
+                  <Typography color="primary.main" variant="h6">
+                    {mentor.expertise || "General mentorship"}
+                  </Typography>
+                  <Typography color="text.secondary">
+                    {mentor.bio || "Ready to listen, share experience, and help you think clearly."}
+                  </Typography>
+                </Stack>
+
+                <Box
+                  sx={{
+                    background: "#ffffff",
+                    border: "1px solid",
+                    borderColor: "divider",
+                    borderRadius: 2,
+                    p: 3,
                   }}
-                  disabled={auth.user.role !== "user"}
                 >
-                  Request mentorship session
-                </Button>
-                {auth.user.role !== "user" ? (
-                  <Alert severity="info">Only end users looking for mentors can create new session requests.</Alert>
-                ) : null}
-              </Stack>
+                    <Stack spacing={2}>
+                      <Typography variant="overline" color="text.secondary">
+                        Reach out
+                      </Typography>
+                      <Typography>{mentor.email}</Typography>
+                      <Button
+                        variant="contained"
+                        onClick={() => {
+                          dispatch(clearSessionFeedback());
+                          setOpen(true);
+                        }}
+                        disabled={user?.role !== "user"}
+                      >
+                        Ask for a session
+                      </Button>
+                      {user?.role !== "user" ? (
+                        <Alert severity="info">
+                          Only mentees can ask for a new session.
+                        </Alert>
+                      ) : null}
+                    </Stack>
+                </Box>
+              </Box>
             </CardContent>
           </Card>
 
           <Card>
-            <CardContent sx={{ p: 4 }}>
+            <CardContent sx={{ p: { xs: 3, md: 4 } }}>
               <Stack spacing={2}>
-                <Typography variant="h5">Visible reviews</Typography>
+                <Typography variant="h5">What mentees have shared</Typography>
                 {mentor.reviews?.length ? (
                   mentor.reviews.map((review, index) => (
-                    <Stack key={review.id} spacing={1}>
+                    <Stack key={review.id} spacing={1.25}>
                       {index > 0 ? <Divider /> : null}
-                      <Typography variant="subtitle1">{`Rating: ${review.rating}/5`}</Typography>
+                      <Typography variant="subtitle1">
+                        Rating: {review.rating}/5
+                      </Typography>
                       <Typography color="text.secondary">{review.comment}</Typography>
                       <Typography variant="body2" color="text.secondary">
                         Shared by {review.mentee?.firstName} {review.mentee?.lastName}
@@ -85,25 +140,28 @@ export default function MentorDetailsPage() {
                     </Stack>
                   ))
                 ) : (
-                  <Alert severity="info">No visible reviews have been published for this mentor yet.</Alert>
+                  <Alert severity="info">
+                    No reviews have been shared yet.
+                  </Alert>
                 )}
               </Stack>
             </CardContent>
           </Card>
         </>
       ) : null}
+
       <Dialog open={open} onClose={() => setOpen(false)} fullWidth maxWidth="sm">
-        <DialogTitle>Request mentorship session</DialogTitle>
+        <DialogTitle>Ask for a session</DialogTitle>
         <DialogContent>
           <Stack spacing={2} sx={{ mt: 1 }}>
             <TextField
-              label="Agenda"
+              label="What would you like to talk about?"
               value={form.agenda}
               onChange={(event) => setForm({ ...form, agenda: event.target.value })}
               required
             />
             <TextField
-              label="Message"
+              label="A short message"
               value={form.message}
               onChange={(event) => setForm({ ...form, message: event.target.value })}
               multiline
@@ -122,7 +180,7 @@ export default function MentorDetailsPage() {
               setForm({ agenda: "", message: "" });
             }}
           >
-            Send request
+            Send
           </Button>
         </DialogActions>
       </Dialog>

@@ -1,7 +1,14 @@
-import { Card, CardContent, Stack, Typography } from "@mui/material";
+import {
+  Card,
+  CardContent,
+  Chip,
+  Container,
+  Stack,
+  Typography,
+} from "@mui/material";
 import { useMemo, useState } from "react";
 import { useDispatch, useSelector } from "react-redux";
-import { Navigate } from "react-router-dom";
+import { Link as RouterLink, Navigate } from "react-router-dom";
 import AuthForm from "../components/AuthForm";
 import { signIn } from "../features/auth/authSlice";
 
@@ -20,43 +27,59 @@ export default function SignInPage() {
         label: "Email address",
         type: "email",
         value: form.email,
-        onChange: (e) => setForm({ ...form, email: e.target.value }),
+        onChange: (event) => setForm({ ...form, email: event.target.value }),
       },
       {
         name: "password",
         label: "Password",
         type: "password",
         value: form.password,
-        onChange: (e) => setForm({ ...form, password: e.target.value }),
+        onChange: (event) => setForm({ ...form, password: event.target.value }),
       },
     ],
     [form]
   );
 
   if (user) {
-    return <Navigate to={user.role === "admin" ? "/admin" : "/portal"} replace />;
+    return <Navigate to="/app" replace />;
   }
 
   return (
-    <Card sx={{ maxWidth: 560, mx: "auto" }}>
-      <CardContent sx={{ p: 4 }}>
-        <Stack spacing={3}>
-          <Typography variant="h4">Sign in</Typography>
-          <Typography color="text.secondary">
-            Sign in as an admin, mentor, or end user to continue with mentorship requests and reviews.
-          </Typography>
-          <AuthForm
-            fields={fields}
-            loading={status === "loading"}
-            error={error}
-            submitLabel="Sign in"
-            onSubmit={(event) => {
-              event.preventDefault();
-              dispatch(signIn(form));
-            }}
-          />
-        </Stack>
-      </CardContent>
-    </Card>
+    <Container sx={{ py: { xs: 3, md: 6 } }}>
+      <Card sx={{ maxWidth: 560, mx: "auto" }}>
+        <CardContent sx={{ p: { xs: 3, md: 4 } }}>
+          <Stack spacing={3}>
+            <Chip label="Welcome back" color="primary" sx={{ width: "fit-content" }} />
+            <Stack spacing={1}>
+              <Typography variant="h3">Welcome back</Typography>
+              <Typography color="text.secondary">
+                Pick up where you left off with mentors, requests, and conversations.
+              </Typography>
+            </Stack>
+            <AuthForm
+              fields={fields}
+              loading={status === "loading"}
+              error={error}
+              submitLabel="Sign in"
+              onSubmit={(event) => {
+                event.preventDefault();
+                dispatch(signIn(form));
+              }}
+            />
+            <Typography color="text.secondary">
+              Need an account?{" "}
+              <Typography
+                component={RouterLink}
+                to="/signup"
+                sx={{ color: "primary.main", textDecoration: "none", fontWeight: 700 }}
+              >
+                Create one
+              </Typography>
+              .
+            </Typography>
+          </Stack>
+        </CardContent>
+      </Card>
+    </Container>
   );
 }

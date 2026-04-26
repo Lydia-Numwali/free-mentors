@@ -6,7 +6,7 @@ import HomePage from "./HomePage";
 import { store } from "../app/store";
 import { theme } from "../theme";
 
-test("renders hero content", () => {
+test("renders Free Mentors hero content", () => {
   render(
     <Provider store={store}>
       <ThemeProvider theme={theme}>
@@ -17,5 +17,7 @@ test("renders hero content", () => {
     </Provider>
   );
 
-  expect(screen.getByText(/simple admin, mentor, and end-user flow/i)).toBeInTheDocument();
+  expect(
+    screen.getByText(/Find someone kind/i)
+  ).toBeInTheDocument();
 });

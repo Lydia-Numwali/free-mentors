@@ -1,0 +1,128 @@
+/* Modal Component Styles */
+
+.overlay {
+  /* Overlay Styling */
+  position: fixed;
+  top: 0;
+  left: 0;
+  right: 0;
+  bottom: 0;
+  background-color: rgba(0, 0, 0, 0.5);
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  z-index: 1000;
+  animation: fadeIn 0.2s ease;
+}
+
+@keyframes fadeIn {
+  from {
+    opacity: 0;
+  }
+  to {
+    opacity: 1;
+  }
+}
+
+.modal {
+  /* Modal Container */
+  background-color: var(--color-bg-primary);
+  border-radius: var(--border-radius-xl);
+  box-shadow: 0 20px 25px rgba(0, 0, 0, 0.15);
+  padding: var(--padding-modal);
+  max-height: 90vh;
+  overflow-y: auto;
+  animation: slideUp 0.2s ease;
+  box-sizing: border-box;
+}
+
+@keyframes slideUp {
+  from {
+    transform: translateY(20px);
+    opacity: 0;
+  }
+  to {
+    transform: translateY(0);
+    opacity: 1;
+  }
+}
+
+/* Modal Size Variants */
+
+.modal--regular {
+  max-width: 500px;
+  width: 90vw;
+}
+
+.modal--large {
+  max-width: 800px;
+  width: 90vw;
+}
+
+/* Modal Header */
+.header {
+  display: flex;
+  align-items: flex-start;
+  justify-content: space-between;
+  gap: var(--spacing-lg);
+  border-bottom: 1px solid var(--color-border-primary);
+  padding-bottom: var(--spacing-lg);
+  margin-bottom: var(--spacing-lg);
+}
+
+.headerContent {
+  flex: 1;
+}
+
+.title {
+  font-size: 20px;
+  font-weight: 600;
+  line-height: 1.4;
+  color: var(--color-text-primary);
+  margin: 0;
+}
+
+.closeButton {
+  /* Close Button Styling */
+  background: none;
+  border: none;
+  padding: 0;
+  cursor: pointer;
+  color: var(--color-neutral-600);
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  width: 24px;
+  height: 24px;
+  flex-shrink: 0;
+  transition: color 0.2s ease;
+}
+
+.closeButton:hover {
+  color: var(--color-text-primary);
+}
+
+.closeButton:focus {
+  outline: none;
+  box-shadow: 0 0 0 3px rgba(37, 99, 235, 0.1);
+  border-radius: 4px;
+}
+
+/* Modal Body */
+.body {
+  font-size: 14px;
+  font-weight: 400;
+  line-height: 1.6;
+  color: var(--color-text-primary);
+  margin: 0;
+}
+
+/* Modal Footer */
+.footer {
+  border-top: 1px solid var(--color-border-primary);
+  padding-top: var(--spacing-lg);
+  margin-top: var(--spacing-xl);
+  display: flex;
+  gap: var(--spacing-md);
+  justify-content: flex-end;
+}
